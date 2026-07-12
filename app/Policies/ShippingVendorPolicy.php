@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use TomatoPHP\FilamentEcommerce\Models\ShippingVendor;
+use App\Models\ShippingVendor;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ShippingVendorPolicy

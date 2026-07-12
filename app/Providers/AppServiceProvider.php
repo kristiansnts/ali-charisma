@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Account;
+use App\Models\ShippingVendor;
 use App\Policies\CompanyPolicy;
 use App\Policies\CouponPolicy;
 use App\Policies\GiftCardPolicy;
@@ -20,7 +21,6 @@ use TomatoPHP\FilamentEcommerce\Models\GiftCard;
 use TomatoPHP\FilamentEcommerce\Models\Order;
 use TomatoPHP\FilamentEcommerce\Models\Product;
 use TomatoPHP\FilamentEcommerce\Models\ReferralCode;
-use TomatoPHP\FilamentEcommerce\Models\ShippingVendor;
 
 class AppServiceProvider extends ServiceProvider
 {

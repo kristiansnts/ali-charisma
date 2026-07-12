@@ -72,6 +72,7 @@ class AdminPanelProvider extends PanelProvider
                     ->useGiftCard(false)
                     ->useReferralCode(false)
                     ->useOrder(false)
+                    ->useShippingVendor(false)
                     ->allowOrderExport(false)
                     ->allowOrderImport(false)
                     ->useWidgets(false)
