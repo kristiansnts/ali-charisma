@@ -1,0 +1,44 @@
+# fly.toml app configuration file generated for ali-charisma-ecommerce on 2026-07-10T23:17:42+07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'ali-charisma-ecommerce'
+primary_region = 'sin'
+console_command = 'php /var/www/html/artisan tinker'
+
+[build]
+  [build.args]
+    NODE_VERSION = '22'
+    PHP_VERSION = '8.4'
+
+[env]
+  APP_NAME = 'Ali Charisma'
+  APP_ENV = 'production'
+  APP_DEBUG = 'false'
+  APP_URL = 'https://ali-charisma-ecommerce.fly.dev'
+  LOG_CHANNEL = 'stderr'
+  LOG_LEVEL = 'info'
+  LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
+  DB_CONNECTION = 'mysql'
+  DB_HOST = 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com'
+  DB_PORT = '4000'
+  DB_DATABASE = 'test'
+  MYSQL_ATTR_SSL_CA = '/etc/ssl/certs/ca-certificates.crt'
+  CACHE_STORE = 'database'
+  QUEUE_CONNECTION = 'database'
+  SESSION_DRIVER = 'cookie'
+  SESSION_SECURE_COOKIE = 'true'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '512mb'
+  cpus = 1
+  memory_mb = 512
