@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Team;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -87,6 +87,22 @@ class Account extends Authenticatable implements HasAvatar, HasMedia
         'host',
         'agent',
     ];
+
+    protected static function booted(): void
+    {
+        // TomatoPHP CreateAction uses Model::create() and skips Filament tenant association.
+        static::creating(function (Account $account): void {
+            if ($account->team_id !== null) {
+                return;
+            }
+
+            $tenant = Filament::getTenant();
+
+            if ($tenant instanceof Team) {
+                $account->team_id = $tenant->getKey();
+            }
+        });
+    }
 
     public function getFilamentAvatarUrl(): ?string
     {

@@ -3,7 +3,9 @@
 namespace App\Providers\Filament;
 
 use App\Models\Team;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,6 +21,10 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use TomatoPHP\FilamentEcommerce\Filament\Pages\OrderReceiptSettingsPage;
+use TomatoPHP\FilamentEcommerce\Filament\Pages\OrderSettingsPage;
+use TomatoPHP\FilamentEcommerce\Filament\Pages\OrderStatusSettingsPage;
+use TomatoPHP\FilamentEcommerce\FilamentEcommercePlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -28,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName(fn (): string => Filament::getTenant()?->name ?? (string) config('app.name'))
             ->login()
             ->tenant(Team::class, slugAttribute: 'slug')
             ->tenantMiddleware([
@@ -40,14 +47,13 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                \TomatoPHP\FilamentEcommerce\Filament\Pages\OrderSettingsPage::class,
-                \TomatoPHP\FilamentEcommerce\Filament\Pages\OrderStatusSettingsPage::class,
-                \TomatoPHP\FilamentEcommerce\Filament\Pages\OrderReceiptSettingsPage::class,
+                OrderSettingsPage::class,
+                OrderStatusSettingsPage::class,
+                OrderReceiptSettingsPage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -61,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                \TomatoPHP\FilamentEcommerce\FilamentEcommercePlugin::make()
+                FilamentEcommercePlugin::make()
                     ->useCoupon(false)
                     ->useGiftCard(false)
                     ->useReferralCode(false)
@@ -70,7 +76,7 @@ class AdminPanelProvider extends PanelProvider
                     ->allowOrderImport(false)
                     ->useWidgets(false)
                     ->allowShield(),
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

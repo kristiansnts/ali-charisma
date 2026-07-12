@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\Account;
 use App\Models\Team;
 use App\Models\User;
 use Database\Seeders\TenantSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use TomatoPHP\FilamentEcommerce\Models\Product;
 
 uses(RefreshDatabase::class);
 
@@ -55,23 +57,46 @@ it('scopes products to the active tenant', function () {
     $aliCharisma = Team::query()->where('slug', 'ali-charisma')->firstOrFail();
     $djarumHijau = Team::query()->where('slug', 'djarum-hijau')->firstOrFail();
 
-    $aliProduct = \TomatoPHP\FilamentEcommerce\Models\Product::query()->create([
+    $aliProduct = Product::query()->create([
         'team_id' => $aliCharisma->id,
         'name' => 'Ali Product',
         'slug' => 'ali-product',
         'price' => 10,
     ]);
 
-    $djarumProduct = \TomatoPHP\FilamentEcommerce\Models\Product::query()->create([
+    $djarumProduct = Product::query()->create([
         'team_id' => $djarumHijau->id,
         'name' => 'Djarum Product',
         'slug' => 'djarum-product',
         'price' => 20,
     ]);
 
-    expect(\TomatoPHP\FilamentEcommerce\Models\Product::query()->whereBelongsTo($aliCharisma)->pluck('id')->all())
+    expect(Product::query()->whereBelongsTo($aliCharisma)->pluck('id')->all())
         ->toBe([$aliProduct->id]);
 
-    expect(\TomatoPHP\FilamentEcommerce\Models\Product::query()->whereBelongsTo($djarumHijau)->pluck('id')->all())
+    expect(Product::query()->whereBelongsTo($djarumHijau)->pluck('id')->all())
         ->toBe([$djarumProduct->id]);
+});
+
+it('assigns the active tenant when creating an account', function () {
+    $this->seed(TenantSeeder::class);
+
+    $admin = User::query()->where('email', 'admin@example.com')->firstOrFail();
+    $aliCharisma = Team::query()->where('slug', 'ali-charisma')->firstOrFail();
+
+    $this->actingAs($admin);
+    filament()->setCurrentPanel(filament()->getPanel('admin'));
+    filament()->setTenant($aliCharisma);
+
+    $account = Account::query()->create([
+        'name' => 'Customer One',
+        'email' => 'customer@example.com',
+        'username' => 'customer@example.com',
+        'loginBy' => 'email',
+        'password' => bcrypt('password'),
+    ]);
+
+    expect($account->team_id)->toBe($aliCharisma->id);
+    expect(Account::query()->whereBelongsTo($aliCharisma)->pluck('id')->all())
+        ->toBe([$account->id]);
 });
