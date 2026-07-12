@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\User;
-use TomatoPHP\FilamentEcommerce\Models\GiftCard;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use TomatoPHP\FilamentEcommerce\Models\GiftCard;
 
 class GiftCardPolicy
 {
@@ -15,7 +15,7 @@ class GiftCardPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_gift::card');
+        return $user->hasPermissionTo('view_any_gift::card');
     }
 
     /**
@@ -23,7 +23,7 @@ class GiftCardPolicy
      */
     public function view(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('view_gift::card');
+        return $user->hasPermissionTo('view_gift::card');
     }
 
     /**
@@ -31,7 +31,7 @@ class GiftCardPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_gift::card');
+        return $user->hasPermissionTo('create_gift::card');
     }
 
     /**
@@ -39,7 +39,7 @@ class GiftCardPolicy
      */
     public function update(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('update_gift::card');
+        return $user->hasPermissionTo('update_gift::card');
     }
 
     /**
@@ -47,7 +47,7 @@ class GiftCardPolicy
      */
     public function delete(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('delete_gift::card');
+        return $user->hasPermissionTo('delete_gift::card');
     }
 
     /**
@@ -55,7 +55,7 @@ class GiftCardPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_gift::card');
+        return $user->hasPermissionTo('delete_any_gift::card');
     }
 
     /**
@@ -63,7 +63,7 @@ class GiftCardPolicy
      */
     public function forceDelete(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('force_delete_gift::card');
+        return $user->hasPermissionTo('force_delete_gift::card');
     }
 
     /**
@@ -71,7 +71,7 @@ class GiftCardPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_gift::card');
+        return $user->hasPermissionTo('force_delete_any_gift::card');
     }
 
     /**
@@ -79,7 +79,7 @@ class GiftCardPolicy
      */
     public function restore(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('restore_gift::card');
+        return $user->hasPermissionTo('restore_gift::card');
     }
 
     /**
@@ -87,7 +87,7 @@ class GiftCardPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_gift::card');
+        return $user->hasPermissionTo('restore_any_gift::card');
     }
 
     /**
@@ -95,7 +95,7 @@ class GiftCardPolicy
      */
     public function replicate(User $user, GiftCard $giftCard): bool
     {
-        return $user->can('replicate_gift::card');
+        return $user->hasPermissionTo('replicate_gift::card');
     }
 
     /**
@@ -103,6 +103,6 @@ class GiftCardPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_gift::card');
+        return $user->hasPermissionTo('reorder_gift::card');
     }
 }

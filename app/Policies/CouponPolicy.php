@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\User;
-use TomatoPHP\FilamentEcommerce\Models\Coupon;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use TomatoPHP\FilamentEcommerce\Models\Coupon;
 
 class CouponPolicy
 {
@@ -15,7 +15,7 @@ class CouponPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_coupon');
+        return $user->hasPermissionTo('view_any_coupon');
     }
 
     /**
@@ -23,7 +23,7 @@ class CouponPolicy
      */
     public function view(User $user, Coupon $coupon): bool
     {
-        return $user->can('view_coupon');
+        return $user->hasPermissionTo('view_coupon');
     }
 
     /**
@@ -31,7 +31,7 @@ class CouponPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_coupon');
+        return $user->hasPermissionTo('create_coupon');
     }
 
     /**
@@ -39,7 +39,7 @@ class CouponPolicy
      */
     public function update(User $user, Coupon $coupon): bool
     {
-        return $user->can('update_coupon');
+        return $user->hasPermissionTo('update_coupon');
     }
 
     /**
@@ -47,7 +47,7 @@ class CouponPolicy
      */
     public function delete(User $user, Coupon $coupon): bool
     {
-        return $user->can('delete_coupon');
+        return $user->hasPermissionTo('delete_coupon');
     }
 
     /**
@@ -55,7 +55,7 @@ class CouponPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_coupon');
+        return $user->hasPermissionTo('delete_any_coupon');
     }
 
     /**
@@ -63,7 +63,7 @@ class CouponPolicy
      */
     public function forceDelete(User $user, Coupon $coupon): bool
     {
-        return $user->can('force_delete_coupon');
+        return $user->hasPermissionTo('force_delete_coupon');
     }
 
     /**
@@ -71,7 +71,7 @@ class CouponPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_coupon');
+        return $user->hasPermissionTo('force_delete_any_coupon');
     }
 
     /**
@@ -79,7 +79,7 @@ class CouponPolicy
      */
     public function restore(User $user, Coupon $coupon): bool
     {
-        return $user->can('restore_coupon');
+        return $user->hasPermissionTo('restore_coupon');
     }
 
     /**
@@ -87,7 +87,7 @@ class CouponPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_coupon');
+        return $user->hasPermissionTo('restore_any_coupon');
     }
 
     /**
@@ -95,7 +95,7 @@ class CouponPolicy
      */
     public function replicate(User $user, Coupon $coupon): bool
     {
-        return $user->can('replicate_coupon');
+        return $user->hasPermissionTo('replicate_coupon');
     }
 
     /**
@@ -103,6 +103,6 @@ class CouponPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_coupon');
+        return $user->hasPermissionTo('reorder_coupon');
     }
 }

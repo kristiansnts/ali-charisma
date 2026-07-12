@@ -10,6 +10,8 @@ use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\ReferralCodePolicy;
 use App\Policies\ShippingVendorPolicy;
+use Filament\Events\TenantSet;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use TomatoPHP\FilamentEcommerce\Models\Company;
@@ -37,5 +39,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Coupon::class, CouponPolicy::class);
         Gate::policy(GiftCard::class, GiftCardPolicy::class);
         Gate::policy(ReferralCode::class, ReferralCodePolicy::class);
+
+        // Keep Spatie team context in sync whenever Filament sets the tenant.
+        // Without this, role permissions resolve empty and Shield hides all resources.
+        Event::listen(TenantSet::class, function (TenantSet $event): void {
+            setPermissionsTeamId($event->getTenant());
+        });
     }
 }

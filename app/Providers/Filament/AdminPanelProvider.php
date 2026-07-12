@@ -2,9 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\SyncPermissionTeam;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->tenant(Team::class, slugAttribute: 'slug')
             ->tenantMiddleware([
-                SyncShieldTenant::class,
+                SyncPermissionTeam::class,
             ], isPersistent: true)
             ->colors([
                 'primary' => Color::Amber,

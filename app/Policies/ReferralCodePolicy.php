@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\User;
-use TomatoPHP\FilamentEcommerce\Models\ReferralCode;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use TomatoPHP\FilamentEcommerce\Models\ReferralCode;
 
 class ReferralCodePolicy
 {
@@ -15,7 +15,7 @@ class ReferralCodePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_referral::code');
+        return $user->hasPermissionTo('view_any_referral::code');
     }
 
     /**
@@ -23,7 +23,7 @@ class ReferralCodePolicy
      */
     public function view(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('view_referral::code');
+        return $user->hasPermissionTo('view_referral::code');
     }
 
     /**
@@ -31,7 +31,7 @@ class ReferralCodePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_referral::code');
+        return $user->hasPermissionTo('create_referral::code');
     }
 
     /**
@@ -39,7 +39,7 @@ class ReferralCodePolicy
      */
     public function update(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('update_referral::code');
+        return $user->hasPermissionTo('update_referral::code');
     }
 
     /**
@@ -47,7 +47,7 @@ class ReferralCodePolicy
      */
     public function delete(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('delete_referral::code');
+        return $user->hasPermissionTo('delete_referral::code');
     }
 
     /**
@@ -55,7 +55,7 @@ class ReferralCodePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_referral::code');
+        return $user->hasPermissionTo('delete_any_referral::code');
     }
 
     /**
@@ -63,7 +63,7 @@ class ReferralCodePolicy
      */
     public function forceDelete(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('force_delete_referral::code');
+        return $user->hasPermissionTo('force_delete_referral::code');
     }
 
     /**
@@ -71,7 +71,7 @@ class ReferralCodePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_referral::code');
+        return $user->hasPermissionTo('force_delete_any_referral::code');
     }
 
     /**
@@ -79,7 +79,7 @@ class ReferralCodePolicy
      */
     public function restore(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('restore_referral::code');
+        return $user->hasPermissionTo('restore_referral::code');
     }
 
     /**
@@ -87,7 +87,7 @@ class ReferralCodePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_referral::code');
+        return $user->hasPermissionTo('restore_any_referral::code');
     }
 
     /**
@@ -95,7 +95,7 @@ class ReferralCodePolicy
      */
     public function replicate(User $user, ReferralCode $referralCode): bool
     {
-        return $user->can('replicate_referral::code');
+        return $user->hasPermissionTo('replicate_referral::code');
     }
 
     /**
@@ -103,6 +103,6 @@ class ReferralCodePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_referral::code');
+        return $user->hasPermissionTo('reorder_referral::code');
     }
 }
