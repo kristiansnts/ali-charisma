@@ -11,9 +11,15 @@ use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\ReferralCodePolicy;
 use App\Policies\ShippingVendorPolicy;
+use App\Support\ProductCartList;
+use App\Support\ProductCompareAttributes;
+use App\Support\ProductCompareList;
+use App\Support\ProductWishlistList;
 use Filament\Events\TenantSet;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use TomatoPHP\FilamentEcommerce\Models\Company;
 use TomatoPHP\FilamentEcommerce\Models\Coupon;
@@ -44,6 +50,44 @@ class AppServiceProvider extends ServiceProvider
         // Without this, role permissions resolve empty and Shield hides all resources.
         Event::listen(TenantSet::class, function (TenantSet $event): void {
             setPermissionsTeamId($event->getTenant());
+        });
+
+        View::composer(['layouts.malefashion', 'malefashion.*'], function ($view): void {
+            $wishlistCount = ProductWishlistList::count();
+            $cartCount = ProductCartList::count();
+            $cartTotal = ProductCartList::formattedSubtotal();
+
+            if (! Schema::hasTable('products')) {
+                $view->with([
+                    'compareCount' => 0,
+                    'compareProducts' => [],
+                    'compareableProducts' => collect(),
+                    'wishlistCount' => $wishlistCount,
+                    'cartCount' => $cartCount,
+                    'cartTotal' => $cartTotal,
+                ]);
+
+                return;
+            }
+
+            $products = ProductCompareList::products()
+                ->map(fn (Product $product): array => ProductCompareAttributes::from($product))
+                ->all();
+
+            $compareableProducts = Product::query()
+                ->whereIn('slug', ['long-strappy-dress', 'jersey-graphic-tee-dolce'])
+                ->where('is_activated', true)
+                ->get()
+                ->keyBy('slug');
+
+            $view->with([
+                'compareCount' => count($products),
+                'compareProducts' => $products,
+                'compareableProducts' => $compareableProducts,
+                'wishlistCount' => $wishlistCount,
+                'cartCount' => $cartCount,
+                'cartTotal' => $cartTotal,
+            ]);
         });
     }
 }
