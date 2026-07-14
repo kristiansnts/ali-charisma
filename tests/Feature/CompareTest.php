@@ -13,7 +13,7 @@ beforeEach(function () {
     $this->seed(MalefashionProductSeeder::class);
 });
 
-it('shows a compare trigger next to the cart total', function () {
+it('shows a compare trigger in the header nav icons', function () {
     $this->get('/')
         ->assertSuccessful()
         ->assertSee('data-compare-open', false)

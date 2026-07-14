@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Account;
+use App\Models\AccountAddress;
 use App\Support\CustomerAddressList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -42,7 +43,7 @@ it('renders the addresses page with add address modal', function () {
         ->assertSee('Back to account', false);
 });
 
-it('saves and deletes customer addresses from session', function () {
+it('saves and deletes customer addresses in the database', function () {
     $account = Account::factory()->create();
 
     $this->actingAs($account, 'account')
@@ -58,6 +59,14 @@ it('saves and deletes customer addresses from session', function () {
             'default' => '1',
         ])
         ->assertRedirect(route('malefashion.account.addresses'));
+
+    $this->assertDatabaseHas('account_addresses', [
+        'account_id' => $account->id,
+        'first_name' => 'Ali',
+        'city' => 'Malang',
+        'province' => 'Jawa Timur',
+        'is_default' => true,
+    ]);
 
     $default = CustomerAddressList::default();
     expect($default)->not->toBeNull()
@@ -75,7 +84,27 @@ it('saves and deletes customer addresses from session', function () {
         ->delete(route('malefashion.account.addresses.destroy', $default['id']))
         ->assertRedirect(route('malefashion.account.addresses'));
 
-    expect(CustomerAddressList::default()['country'])->toBe('Indonesia');
+    expect(AccountAddress::query()->where('account_id', $account->id)->count())->toBe(0)
+        ->and(CustomerAddressList::default()['country'])->toBe('Indonesia');
+});
+
+it('keeps customer addresses after a new session for the same account', function () {
+    $account = Account::factory()->create();
+
+    AccountAddress::factory()->for($account)->default()->create([
+        'first_name' => 'Nadia',
+        'last_name' => 'Customer',
+        'address1' => 'Jl. Merdeka 10',
+        'city' => 'Surabaya',
+        'province' => 'Jawa Timur',
+    ]);
+
+    $this->actingAs($account, 'account')
+        ->get(route('malefashion.account.addresses'))
+        ->assertSuccessful()
+        ->assertSee('Nadia Customer', false)
+        ->assertSee('Jl. Merdeka 10', false)
+        ->assertSee('Surabaya', false);
 });
 
 it('links the header account icon to the login page for guests', function () {

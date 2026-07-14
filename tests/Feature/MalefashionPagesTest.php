@@ -161,18 +161,20 @@ it('links the cart proceed button to checkout', function () {
         ->assertSee(route('malefashion.checkout', absolute: false), false);
 });
 
-it('spaces header nav icons without overlapping the cart total', function () {
+it('aligns header nav icons without showing a cart total', function () {
     $css = file_get_contents(public_path('malefashion/css/style.css'));
 
     expect($css)
         ->toContain('.header__nav__option a img')
         ->toContain('filter: invert(1)')
-        ->toMatch('/\.header__nav__option \.price\s*\{[^}]*margin-left:\s*4px;/s');
+        ->toContain('justify-content: flex-end')
+        ->not->toMatch('/\.header__nav__option \.price\s*\{/');
 
     $this->get('/')
         ->assertSuccessful()
         ->assertSee('malefashion/img/icon/heart.png', false)
-        ->assertSee('malefashion/img/icon/cart.png', false);
+        ->assertSee('malefashion/img/icon/cart.png', false)
+        ->assertDontSee('data-cart-total', false);
 });
 
 it('renders the Ali Charisma style product details page', function () {

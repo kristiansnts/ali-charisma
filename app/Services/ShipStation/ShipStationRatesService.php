@@ -51,14 +51,20 @@ class ShipStationRatesService
                 : null,
         ], fn (mixed $value): bool => $value !== null);
 
+        $shipment = [
+            'validate_address' => $request->validateAddress,
+            'ship_to' => $request->shipTo,
+            'ship_from' => $request->shipFrom,
+            'packages' => $request->packages,
+        ];
+
+        if ($request->customs !== null) {
+            $shipment['customs'] = $request->customs;
+        }
+
         $payload = [
             'rate_options' => $rateOptions,
-            'shipment' => [
-                'validate_address' => $request->validateAddress,
-                'ship_to' => $request->shipTo,
-                'ship_from' => $request->shipFrom,
-                'packages' => $request->packages,
-            ],
+            'shipment' => $shipment,
         ];
 
         $raw = $this->client->post('/v2/rates', $payload);

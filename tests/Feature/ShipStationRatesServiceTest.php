@@ -25,9 +25,9 @@ it('builds rates payload from customer input and activated tenant carriers only'
     ShippingVendor::query()->create([
         'team_id' => $team->id,
         'code' => 'dhl_express',
-        'name' => 'DHL Express Domestic',
+        'name' => 'DHL Express Worldwide',
         'carrier_id' => 'se-6345411',
-        'service_codes' => ['dhl_express_mydhl_domestic_express'],
+        'service_codes' => ['dhl_express_mydhl_express_worldwide_nondoc'],
         'is_activated' => true,
         'price' => 0,
     ]);
@@ -102,7 +102,7 @@ it('builds rates payload from customer input and activated tenant carriers only'
             && $data === [
                 'rate_options' => [
                     'carrier_ids' => ['se-6345411'],
-                    'service_codes' => ['dhl_express_mydhl_domestic_express'],
+                    'service_codes' => ['dhl_express_mydhl_express_worldwide_nondoc'],
                     'preferred_currency' => 'USD',
                     'calculate_tax_amount' => false,
                     'is_return' => false,
@@ -188,9 +188,9 @@ it('throws when shipstation returns a non success response', function () {
     ShippingVendor::query()->create([
         'team_id' => $team->id,
         'code' => 'dhl_express',
-        'name' => 'DHL Express Domestic',
+        'name' => 'DHL Express Worldwide',
         'carrier_id' => 'se-6345411',
-        'service_codes' => ['dhl_express_mydhl_domestic_express'],
+        'service_codes' => ['dhl_express_mydhl_express_worldwide_nondoc'],
         'is_activated' => true,
         'price' => 0,
     ]);

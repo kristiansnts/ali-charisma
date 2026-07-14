@@ -2,6 +2,10 @@
 
 namespace App\Support;
 
+use App\Models\Account;
+use App\Models\AccountAddress;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
@@ -27,22 +31,13 @@ class CustomerAddressList
      */
     public static function items(): array
     {
-        $items = collect(Session::get(self::SESSION_KEY, []))
-            ->filter(fn (mixed $item): bool => is_array($item) && filled($item['id'] ?? null))
-            ->map(fn (array $item): array => self::normalize($item))
-            ->values()
-            ->all();
+        $account = self::account();
 
-        if ($items === []) {
-            $items = [self::normalize([
-                'id' => 'default-indonesia',
-                'country' => 'Indonesia',
-                'default' => true,
-            ])];
-            Session::put(self::SESSION_KEY, $items);
+        if ($account !== null) {
+            return self::itemsForAccount($account);
         }
 
-        return $items;
+        return self::sessionItems();
     }
 
     /**
@@ -87,64 +82,26 @@ class CustomerAddressList
      */
     public static function store(array $data, ?string $id = null): array
     {
-        $items = self::items();
-        $isDefault = (bool) ($data['default'] ?? false);
-        $address = self::normalize([
-            ...$data,
-            'id' => $id ?: (string) Str::uuid(),
-            'default' => $isDefault,
-        ]);
+        $account = self::account();
 
-        if ($isDefault) {
-            $items = array_map(function (array $item) use ($address): array {
-                $item['default'] = $item['id'] === $address['id'];
-
-                return $item;
-            }, $items);
+        if ($account !== null) {
+            return self::storeForAccount($account, $data, $id);
         }
 
-        $updated = false;
-        foreach ($items as $index => $item) {
-            if ($item['id'] === $address['id']) {
-                $items[$index] = $address;
-                $updated = true;
-                break;
-            }
-        }
-
-        if (! $updated) {
-            if ($items === [] || $isDefault) {
-                $address['default'] = true;
-                $items = array_map(function (array $item) use ($address): array {
-                    $item['default'] = $item['id'] === $address['id'];
-
-                    return $item;
-                }, $items);
-            }
-            $items[] = $address;
-        }
-
-        if (! collect($items)->contains(fn (array $item): bool => $item['default'])) {
-            $items[0]['default'] = true;
-        }
-
-        Session::put(self::SESSION_KEY, array_values($items));
-
-        return $address;
+        return self::storeInSession($data, $id);
     }
 
     public static function remove(string $id): void
     {
-        $items = array_values(array_filter(
-            self::items(),
-            fn (array $item): bool => $item['id'] !== $id
-        ));
+        $account = self::account();
 
-        if ($items !== [] && ! collect($items)->contains(fn (array $item): bool => $item['default'])) {
-            $items[0]['default'] = true;
+        if ($account !== null) {
+            self::removeForAccount($account, $id);
+
+            return;
         }
 
-        Session::put(self::SESSION_KEY, $items);
+        self::removeFromSession($id);
     }
 
     /**
@@ -191,6 +148,254 @@ class CustomerAddressList
             ],
             default => [],
         };
+    }
+
+    private static function account(): ?Account
+    {
+        $account = Auth::guard('account')->user();
+
+        return $account instanceof Account ? $account : null;
+    }
+
+    /**
+     * @return list<array{
+     *     id: string,
+     *     first_name: string,
+     *     last_name: string,
+     *     company: string,
+     *     phone: string,
+     *     address1: string,
+     *     address2: string,
+     *     city: string,
+     *     zip: string,
+     *     country: string,
+     *     province: string,
+     *     default: bool
+     * }>
+     */
+    private static function itemsForAccount(Account $account): array
+    {
+        $items = $account->addresses()
+            ->orderByDesc('is_default')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (AccountAddress $address): array => $address->toListItem())
+            ->values()
+            ->all();
+
+        if ($items === []) {
+            return [self::normalize([
+                'id' => 'default-indonesia',
+                'country' => 'Indonesia',
+                'default' => true,
+            ])];
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{
+     *     id: string,
+     *     first_name: string,
+     *     last_name: string,
+     *     company: string,
+     *     phone: string,
+     *     address1: string,
+     *     address2: string,
+     *     city: string,
+     *     zip: string,
+     *     country: string,
+     *     province: string,
+     *     default: bool
+     * }
+     */
+    private static function storeForAccount(Account $account, array $data, ?string $id): array
+    {
+        $isDefault = (bool) ($data['default'] ?? false);
+
+        return DB::transaction(function () use ($account, $data, $id, $isDefault): array {
+            $address = null;
+
+            if (filled($id) && ctype_digit($id)) {
+                $address = $account->addresses()->whereKey($id)->first();
+            }
+
+            $payload = [
+                'first_name' => (string) ($data['first_name'] ?? ''),
+                'last_name' => (string) ($data['last_name'] ?? ''),
+                'company' => (string) ($data['company'] ?? ''),
+                'phone' => (string) ($data['phone'] ?? ''),
+                'address1' => (string) ($data['address1'] ?? ''),
+                'address2' => (string) ($data['address2'] ?? ''),
+                'city' => (string) ($data['city'] ?? ''),
+                'zip' => (string) ($data['zip'] ?? ''),
+                'country' => (string) ($data['country'] ?? 'Indonesia'),
+                'province' => (string) ($data['province'] ?? ''),
+                'is_default' => $isDefault,
+            ];
+
+            if ($address === null) {
+                $payload['is_default'] = $isDefault || ! $account->addresses()->exists();
+                $address = $account->addresses()->create($payload);
+            } else {
+                if (! $isDefault && $address->is_default && $account->addresses()->count() === 1) {
+                    $payload['is_default'] = true;
+                }
+                $address->update($payload);
+            }
+
+            if ($address->is_default) {
+                $account->addresses()
+                    ->whereKeyNot($address->id)
+                    ->update(['is_default' => false]);
+            } elseif (! $account->addresses()->where('is_default', true)->exists()) {
+                $address->update(['is_default' => true]);
+            }
+
+            return $address->refresh()->toListItem();
+        });
+    }
+
+    private static function removeForAccount(Account $account, string $id): void
+    {
+        if (! ctype_digit($id)) {
+            return;
+        }
+
+        DB::transaction(function () use ($account, $id): void {
+            $address = $account->addresses()->whereKey($id)->first();
+
+            if ($address === null) {
+                return;
+            }
+
+            $wasDefault = $address->is_default;
+            $address->delete();
+
+            if ($wasDefault) {
+                $account->addresses()
+                    ->orderBy('id')
+                    ->first()
+                    ?->update(['is_default' => true]);
+            }
+        });
+    }
+
+    /**
+     * @return list<array{
+     *     id: string,
+     *     first_name: string,
+     *     last_name: string,
+     *     company: string,
+     *     phone: string,
+     *     address1: string,
+     *     address2: string,
+     *     city: string,
+     *     zip: string,
+     *     country: string,
+     *     province: string,
+     *     default: bool
+     * }>
+     */
+    private static function sessionItems(): array
+    {
+        $items = collect(Session::get(self::SESSION_KEY, []))
+            ->filter(fn (mixed $item): bool => is_array($item) && filled($item['id'] ?? null))
+            ->map(fn (array $item): array => self::normalize($item))
+            ->values()
+            ->all();
+
+        if ($items === []) {
+            $items = [self::normalize([
+                'id' => 'default-indonesia',
+                'country' => 'Indonesia',
+                'default' => true,
+            ])];
+            Session::put(self::SESSION_KEY, $items);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{
+     *     id: string,
+     *     first_name: string,
+     *     last_name: string,
+     *     company: string,
+     *     phone: string,
+     *     address1: string,
+     *     address2: string,
+     *     city: string,
+     *     zip: string,
+     *     country: string,
+     *     province: string,
+     *     default: bool
+     * }
+     */
+    private static function storeInSession(array $data, ?string $id = null): array
+    {
+        $items = self::sessionItems();
+        $isDefault = (bool) ($data['default'] ?? false);
+        $address = self::normalize([
+            ...$data,
+            'id' => $id ?: (string) Str::uuid(),
+            'default' => $isDefault,
+        ]);
+
+        if ($isDefault) {
+            $items = array_map(function (array $item) use ($address): array {
+                $item['default'] = $item['id'] === $address['id'];
+
+                return $item;
+            }, $items);
+        }
+
+        $updated = false;
+        foreach ($items as $index => $item) {
+            if ($item['id'] === $address['id']) {
+                $items[$index] = $address;
+                $updated = true;
+                break;
+            }
+        }
+
+        if (! $updated) {
+            if ($items === [] || $isDefault) {
+                $address['default'] = true;
+                $items = array_map(function (array $item) use ($address): array {
+                    $item['default'] = $item['id'] === $address['id'];
+
+                    return $item;
+                }, $items);
+            }
+            $items[] = $address;
+        }
+
+        if (! collect($items)->contains(fn (array $item): bool => $item['default'])) {
+            $items[0]['default'] = true;
+        }
+
+        Session::put(self::SESSION_KEY, array_values($items));
+
+        return $address;
+    }
+
+    private static function removeFromSession(string $id): void
+    {
+        $items = array_values(array_filter(
+            self::sessionItems(),
+            fn (array $item): bool => $item['id'] !== $id
+        ));
+
+        if ($items !== [] && ! collect($items)->contains(fn (array $item): bool => $item['default'])) {
+            $items[0]['default'] = true;
+        }
+
+        Session::put(self::SESSION_KEY, $items);
     }
 
     /**

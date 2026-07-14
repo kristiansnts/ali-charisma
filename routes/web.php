@@ -34,6 +34,7 @@ Route::name('malefashion.')->group(function (): void {
 
     Route::get('/cart', [StorefrontCartController::class, 'index'])->name('cart');
     Route::get('/checkout', [StorefrontCartController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/shipping-rates', [StorefrontCartController::class, 'shippingRates'])->name('checkout.shipping-rates');
     Route::get('/search/predictive', PredictiveSearchController::class)->name('search.predictive');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');

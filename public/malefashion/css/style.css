@@ -762,59 +762,42 @@ body.predictive-search-open {
 }
 
 .header__nav__option {
-	text-align: right;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 20px;
 	padding: 30px 0;
 }
 
-.header__nav__option a {
-	display: inline-block;
-	color: #ffffff;
-	margin-right: 22px;
-	position: relative;
-	padding-right: 4px;
-}
-
-/* Black PNG icons need invert on the black header (same as compare). */
-.header__nav__option a img {
-	filter: invert(1);
-}
-
-.header__nav__option a:last-child {
-	margin-right: 0;
-}
-
-.header__nav__option .price {
-	font-size: 15px;
-	color: #ffffff;
-	font-weight: 700;
-	display: inline-block;
-	margin-left: 4px;
-	margin-right: 22px;
-	vertical-align: middle;
-}
-
-.header__compare {
+.header__nav__option a,
+.header__nav__option button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	position: relative;
+	margin: 0;
 	padding: 0;
 	border: 0;
 	background: transparent;
+	color: #ffffff;
 	cursor: pointer;
-	vertical-align: middle;
-	margin-left: 2px;
+	line-height: 1;
 }
 
-.header__compare img {
+/* Black PNG icons need invert on the black header (same as compare). */
+.header__nav__option a img,
+.header__nav__option button img {
+	filter: invert(1);
+}
+
+.header__compare img,
+.header__cart img {
 	width: 18px;
 	height: auto;
-	filter: invert(1);
 }
 
 .header__wishlist {
 	position: relative;
-	display: inline-block;
 }
 
 .header__wishlist-count,
@@ -838,32 +821,9 @@ body.predictive-search-open {
 	text-align: center;
 }
 
-.header__cart {
-	position: relative;
-	display: inline-block;
-	padding: 0;
-	border: 0;
-	background: transparent;
-	cursor: pointer;
-	vertical-align: middle;
-	margin-right: 4px;
-}
-
-.header__cart img {
-	width: 18px;
-	height: auto;
-	filter: invert(1);
-}
-
 .header__account {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 18px;
-	vertical-align: middle;
 	color: #ffffff;
 	font-size: 16px;
-	line-height: 1;
 }
 
 .header__account:hover {
@@ -3797,11 +3757,8 @@ body.predictive-search-open {
 	.header__menu ul li {
 		margin-right: 10px;
 	}
-	.header__nav__option a {
-		margin-right: 10px;
-	}
-	.header__nav__option .price {
-		margin-left: 0;
+	.header__nav__option {
+		gap: 12px;
 	}
 	.hero__slider.owl-carousel .owl-nav button {
 		left: 2px;
@@ -4019,51 +3976,34 @@ body.predictive-search-open {
 		text-align: center;
 		margin-bottom: 25px;
 	}
-	.offcanvas__nav__option a {
-		display: inline-block;
-		margin-right: 26px;
-		position: relative;
+	.offcanvas__nav__option {
+		display: flex;
+		align-items: center;
+		gap: 22px;
 	}
-	.offcanvas__nav__option .header__cart {
-		display: inline-block;
-		margin-right: 26px;
+	.offcanvas__nav__option a,
+	.offcanvas__nav__option button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		position: relative;
+		margin: 0;
 		padding: 0;
 		border: 0;
 		background: transparent;
 		cursor: pointer;
-		vertical-align: middle;
+		line-height: 1;
 	}
 	.offcanvas__nav__option .header__account {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		margin-right: 26px;
 		color: #111111;
 		font-size: 16px;
-		vertical-align: middle;
 	}
 	.offcanvas__nav__option .header__account:hover {
 		color: #e53637;
 	}
-	.offcanvas__nav__option a span {
-		color: #0d0d0d;
-		font-size: 11px;
-		position: absolute;
-		left: 5px;
-		top: 8px;
-	}
-	.offcanvas__nav__option a:last-child {
-		margin-right: 0;
-	}
-	.offcanvas__nav__option .price {
-		font-size: 15px;
-		color: #111111;
-		font-weight: 700;
-		display: inline-block;
-		margin-left: -20px;
-		position: relative;
-		top: 3px;
+	.offcanvas__nav__option a span,
+	.offcanvas__nav__option button span {
+		color: #ffffff;
 	}
 	.offcanvas__text p {
 		color: #111111;

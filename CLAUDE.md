@@ -162,3 +162,9 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+## Recent Updates [2026-07-14]
+
+- Require customer + ship-from phone for DHL Express checkout rate quotes (ShipStation business rule)
+- Web AJAX validation errors render as JSON when the request expects JSON
+- Switch checkout DHL service from domestic to Express Worldwide (nondoc), with customs for international quotes

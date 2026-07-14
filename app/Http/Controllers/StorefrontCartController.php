@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorefrontShippingRatesRequest;
 use App\Support\CheckoutCustomerData;
+use App\Support\CheckoutShippingQuote;
 use App\Support\ProductCartList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
 
 class StorefrontCartController extends Controller
 {
@@ -55,6 +59,25 @@ class StorefrontCartController extends Controller
             'account' => $account,
             'customer' => CheckoutCustomerData::for($account),
         ]);
+    }
+
+    public function shippingRates(
+        StorefrontShippingRatesRequest $request,
+        CheckoutShippingQuote $quote,
+    ): JsonResponse {
+        try {
+            return response()->json($quote->forCart($request->shipTo()));
+        } catch (RuntimeException $exception) {
+            $message = $exception->getMessage();
+            $status = match (true) {
+                str_contains($message, 'cart is empty') => Response::HTTP_UNPROCESSABLE_ENTITY,
+                str_contains($message, 'No activated shipping carriers') => Response::HTTP_UNPROCESSABLE_ENTITY,
+                str_contains($message, 'not configured') => Response::HTTP_UNPROCESSABLE_ENTITY,
+                default => Response::HTTP_BAD_GATEWAY,
+            };
+
+            return response()->json(['message' => $message], $status);
+        }
     }
 
     public function store(Request $request): JsonResponse

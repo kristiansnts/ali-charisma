@@ -24,11 +24,11 @@
         </div>
         <div>
             <dt>Shipping</dt>
-            <dd>{{ $shipping > 0 ? '$'.number_format($shipping, 2) : 'Free' }}</dd>
+            <dd data-checkout-shipping>{{ $shipping > 0 ? '$'.number_format($shipping, 2) : 'Calculated at next step' }}</dd>
         </div>
         <div class="checkout-summary__total">
             <dt>Total</dt>
-            <dd><span class="checkout-summary__currency">USD</span> ${{ number_format($total, 2) }}</dd>
+            <dd data-checkout-total><span class="checkout-summary__currency">USD</span> ${{ number_format($total, 2) }}</dd>
         </div>
     </dl>
 </div>

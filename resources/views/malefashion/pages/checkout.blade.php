@@ -12,7 +12,7 @@
                         <span data-checkout-summary-label>Show order summary</span>
                         <i class="fa fa-chevron-down" aria-hidden="true"></i>
                     </span>
-                    <strong>${{ number_format($total, 2) }}</strong>
+                    <strong data-checkout-grand-total>${{ number_format($total, 2) }}</strong>
                 </button>
 
                 <aside class="checkout__summary checkout__summary--mobile" id="checkout-summary-mobile" hidden>
@@ -40,10 +40,6 @@
                             <label class="sr-only" for="checkout-email">Email</label>
                             <input id="checkout-email" type="email" name="email" placeholder="Email" autocomplete="email" value="{{ old('email', $customer['email']) }}" required>
                         </div>
-                        <label class="checkout__check">
-                            <input type="checkbox" name="newsletter" value="1" checked>
-                            <span>Email me with news and offers</span>
-                        </label>
                     </section>
 
                     <section class="checkout__section">
@@ -92,30 +88,24 @@
                         </div>
                         <div class="checkout__field">
                             <label class="sr-only" for="checkout-phone">Phone</label>
-                            <input id="checkout-phone" type="tel" name="phone" placeholder="Phone" autocomplete="tel" value="{{ old('phone', $customer['phone']) }}">
+                            <input id="checkout-phone" type="tel" name="phone" placeholder="Phone" autocomplete="tel" value="{{ old('phone', $customer['phone']) }}" required>
                         </div>
                     </section>
 
                     <section class="checkout__section">
                         <h2>Shipping method</h2>
-                        <div class="checkout__methods">
-                            <label class="checkout__method is-selected">
-                                <input type="radio" name="shipping_method" value="standard" checked>
+                        <p class="checkout__hint" data-shipping-status>Enter your delivery address to calculate DHL Express rates.</p>
+                        <div class="checkout__methods" data-shipping-methods>
+                            <div class="checkout__method checkout__method--placeholder is-selected">
                                 <span class="checkout__method-body">
-                                    <span class="checkout__method-title">Standard Shipping</span>
-                                    <span class="checkout__method-meta">5–10 business days</span>
+                                    <span class="checkout__method-title">DHL Express</span>
+                                    <span class="checkout__method-meta">Rates appear after address is complete</span>
                                 </span>
-                                <span class="checkout__method-price">Free</span>
-                            </label>
-                            <label class="checkout__method">
-                                <input type="radio" name="shipping_method" value="express">
-                                <span class="checkout__method-body">
-                                    <span class="checkout__method-title">Express Shipping</span>
-                                    <span class="checkout__method-meta">2–4 business days</span>
-                                </span>
-                                <span class="checkout__method-price">$12.00</span>
-                            </label>
+                                <span class="checkout__method-price">—</span>
+                            </div>
                         </div>
+                        <input type="hidden" name="shipping_rate_id" value="" data-shipping-rate-id>
+                        <input type="hidden" name="shipping_amount" value="0" data-shipping-amount>
                     </section>
 
                     <section class="checkout__section">
@@ -178,6 +168,135 @@
 @push('scripts')
 <script>
     (function ($) {
+        var ratesUrl = @json(route('malefashion.checkout.shipping-rates'));
+        var csrf = @json(csrf_token());
+        var subtotal = {{ json_encode($subtotal) }};
+        var debounceTimer = null;
+        var lastPayload = '';
+
+        function money(amount) {
+            return '$' + Number(amount).toFixed(2);
+        }
+
+        function setTotals(shipping) {
+            var total = subtotal + Number(shipping || 0);
+            $('[data-checkout-shipping]').text(shipping > 0 ? money(shipping) : 'Calculated at next step');
+            $('[data-checkout-total]').html('<span class="checkout-summary__currency">USD</span> ' + money(total));
+            $('[data-checkout-grand-total]').text(money(total));
+            $('[data-shipping-amount]').val(Number(shipping || 0).toFixed(2));
+        }
+
+        function addressPayload() {
+            return {
+                first_name: $('#checkout-first-name').val(),
+                last_name: $('#checkout-last-name').val(),
+                phone: $('#checkout-phone').val(),
+                address: $('#checkout-address').val(),
+                apartment: $('#checkout-apartment').val(),
+                city: $('#checkout-city').val(),
+                province: $('#checkout-province').val(),
+                postal: $('#checkout-postal').val(),
+                country: $('#checkout-country').val(),
+            };
+        }
+
+        function addressComplete(payload) {
+            return Boolean(
+                payload.first_name &&
+                payload.last_name &&
+                payload.phone &&
+                payload.address &&
+                payload.city &&
+                payload.province &&
+                payload.postal &&
+                payload.country
+            );
+        }
+
+        function renderRates(rates) {
+            var $methods = $('[data-shipping-methods]').empty();
+
+            if (!rates.length) {
+                $('[data-shipping-status]').text('No DHL Express rates available for this address.');
+                $methods.append(
+                    '<div class="checkout__method checkout__method--placeholder is-selected">' +
+                    '<span class="checkout__method-body"><span class="checkout__method-title">DHL Express</span>' +
+                    '<span class="checkout__method-meta">Try a different address</span></span>' +
+                    '<span class="checkout__method-price">—</span></div>'
+                );
+                $('[data-shipping-rate-id]').val('');
+                setTotals(0);
+                return;
+            }
+
+            $('[data-shipping-status]').text('Select a DHL Express service.');
+
+            rates.forEach(function (rate, index) {
+                var selected = index === 0 ? ' is-selected' : '';
+                var checked = index === 0 ? ' checked' : '';
+                $methods.append(
+                    '<label class="checkout__method' + selected + '">' +
+                    '<input type="radio" name="shipping_method" value="' + rate.rate_id + '"' + checked +
+                    ' data-rate-amount="' + rate.amount + '" data-rate-id="' + rate.rate_id + '">' +
+                    '<span class="checkout__method-body">' +
+                    '<span class="checkout__method-title">' + (rate.service_type || rate.carrier_friendly_name) + '</span>' +
+                    '<span class="checkout__method-meta">' + (rate.meta || 'Express delivery') + '</span>' +
+                    '</span>' +
+                    '<span class="checkout__method-price">' + money(rate.amount) + '</span>' +
+                    '</label>'
+                );
+            });
+
+            var first = rates[0];
+            $('[data-shipping-rate-id]').val(first.rate_id);
+            setTotals(first.amount);
+        }
+
+        function fetchRates() {
+            var payload = addressPayload();
+
+            if (!addressComplete(payload)) {
+                $('[data-shipping-status]').text('Enter your delivery address to calculate DHL Express rates.');
+                return;
+            }
+
+            var serialized = JSON.stringify(payload);
+            if (serialized === lastPayload) {
+                return;
+            }
+            lastPayload = serialized;
+
+            $('[data-shipping-status]').text('Calculating DHL Express rates…');
+
+            $.ajax({
+                url: ratesUrl,
+                method: 'POST',
+                data: payload,
+                headers: { 'X-CSRF-TOKEN': csrf },
+            }).done(function (data) {
+                renderRates(data.rates || []);
+            }).fail(function (xhr) {
+                lastPayload = '';
+                var message = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message
+                    : 'Unable to calculate shipping right now.';
+                $('[data-shipping-status]').text(message);
+                $('[data-shipping-methods]').html(
+                    '<div class="checkout__method checkout__method--placeholder is-selected">' +
+                    '<span class="checkout__method-body"><span class="checkout__method-title">DHL Express</span>' +
+                    '<span class="checkout__method-meta">Retry after fixing the address</span></span>' +
+                    '<span class="checkout__method-price">—</span></div>'
+                );
+                $('[data-shipping-rate-id]').val('');
+                setTotals(0);
+            });
+        }
+
+        function scheduleRates() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchRates, 400);
+        }
+
         $('[data-checkout-summary-toggle]').on('click', function () {
             var $panel = $('#checkout-summary-mobile');
             var open = !$panel.prop('hidden');
@@ -187,10 +306,19 @@
             $(this).find('.fa').toggleClass('fa-chevron-down fa-chevron-up');
         });
 
-        $('input[name="shipping_method"]').on('change', function () {
+        $(document).on('change', 'input[name="shipping_method"]', function () {
             $('.checkout__method').removeClass('is-selected');
             $(this).closest('.checkout__method').addClass('is-selected');
+            $('[data-shipping-rate-id]').val($(this).data('rate-id'));
+            setTotals($(this).data('rate-amount'));
         });
+
+        $('#checkout-first-name, #checkout-last-name, #checkout-phone, #checkout-address, #checkout-apartment, #checkout-city, #checkout-province, #checkout-postal, #checkout-country')
+            .on('input change', scheduleRates);
+
+        if (addressComplete(addressPayload())) {
+            fetchRates();
+        }
     })(jQuery);
 </script>
 @endpush
