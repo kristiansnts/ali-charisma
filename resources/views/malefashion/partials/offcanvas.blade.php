@@ -2,7 +2,7 @@
 <div class="offcanvas-menu-wrapper">
     <div class="offcanvas__option">
         <div class="offcanvas__links">
-            <a href="#">Sign in</a>
+            <a href="{{ auth('account')->check() ? route('malefashion.account') : route('malefashion.account.login') }}">Sign in</a>
             <a href="#">FAQs</a>
         </div>
         <div class="offcanvas__top__hover">
@@ -17,6 +17,9 @@
     <div class="offcanvas__nav__option">
         <a href="#" class="search-switch">
             <img src="{{ asset('malefashion/img/icon/search.png') }}" alt="">
+        </a>
+        <a href="{{ auth('account')->check() ? route('malefashion.account') : route('malefashion.account.login') }}" class="header__account" aria-label="Account">
+            <i class="fa fa-user-o" aria-hidden="true"></i>
         </a>
         <a href="{{ route('malefashion.wishlist') }}" class="header__wishlist" aria-label="Wishlist">
             <img src="{{ asset('malefashion/img/icon/heart.png') }}" alt="">

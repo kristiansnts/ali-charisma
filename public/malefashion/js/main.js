@@ -191,7 +191,7 @@
     /*--------------------------
         Select
     ----------------------------*/
-    $("select").niceSelect();
+    $("select").not('.js-native-select').niceSelect();
 
     /*-------------------
 		Radio Btn

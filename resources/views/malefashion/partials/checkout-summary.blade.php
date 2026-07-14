@@ -17,12 +17,6 @@
         @endforeach
     </ul>
 
-    <form class="checkout-summary__discount" action="#" method="post" onsubmit="return false;">
-        <label class="sr-only" for="checkout-discount">Discount code</label>
-        <input id="checkout-discount" type="text" name="discount" placeholder="Discount code">
-        <button type="submit">Apply</button>
-    </form>
-
     <dl class="checkout-summary__totals">
         <div>
             <dt>Subtotal</dt>

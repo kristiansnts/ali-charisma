@@ -13,7 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectGuestsTo(function (Request $request): string {
+            if ($request->is('admin') || $request->is('admin/*')) {
+                return url('/admin/login');
+            }
+
+            return route('malefashion.account.login');
+        });
+
+        $middleware->redirectUsersTo(function (Request $request): string {
+            if ($request->is('admin') || $request->is('admin/*')) {
+                return url('/admin');
+            }
+
+            return route('malefashion.account');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

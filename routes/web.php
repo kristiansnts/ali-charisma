@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompareController;
 use App\Http\Controllers\PredictiveSearchController;
+use App\Http\Controllers\StorefrontAccountController;
 use App\Http\Controllers\StorefrontCartController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,22 @@ Route::name('malefashion.')->group(function (): void {
     Route::view('/blog', 'malefashion.pages.blog')->name('blog');
     Route::view('/shop', 'malefashion.pages.shop')->name('shop');
     Route::view('/shop/product', 'malefashion.pages.shop-details')->name('shop-details');
+
+    Route::middleware('guest:account')->group(function (): void {
+        Route::get('/account/login', [StorefrontAccountController::class, 'showLogin'])->name('account.login');
+        Route::post('/account/login', [StorefrontAccountController::class, 'login'])->name('account.login.store');
+        Route::get('/account/register', [StorefrontAccountController::class, 'showRegister'])->name('account.register');
+        Route::post('/account/register', [StorefrontAccountController::class, 'register'])->name('account.register.store');
+    });
+
+    Route::middleware('auth:account')->group(function (): void {
+        Route::get('/account', [StorefrontAccountController::class, 'index'])->name('account');
+        Route::get('/account/addresses', [StorefrontAccountController::class, 'addresses'])->name('account.addresses');
+        Route::post('/account/addresses', [StorefrontAccountController::class, 'storeAddress'])->name('account.addresses.store');
+        Route::delete('/account/addresses/{id}', [StorefrontAccountController::class, 'destroyAddress'])->name('account.addresses.destroy');
+        Route::post('/account/logout', [StorefrontAccountController::class, 'logout'])->name('account.logout');
+    });
+
     Route::get('/cart', [StorefrontCartController::class, 'index'])->name('cart');
     Route::get('/checkout', [StorefrontCartController::class, 'checkout'])->name('checkout');
     Route::get('/search/predictive', PredictiveSearchController::class)->name('search.predictive');

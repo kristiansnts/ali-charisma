@@ -14,9 +14,30 @@ it('renders malefashion storefront pages', function (string $uri) {
     'blog' => '/blog',
     'shop' => '/shop',
     'shop details' => '/shop/product',
+    'account login' => '/account/login',
+    'account register' => '/account/register',
     'cart' => '/cart',
     'wishlist' => '/wishlist',
 ]);
+
+it('links the header account icon to the customer login page', function () {
+    $this->get('/')
+        ->assertSuccessful()
+        ->assertSee('header__account', false)
+        ->assertSee(route('malefashion.account.login', absolute: false), false)
+        ->assertSee('fa-user-o', false);
+});
+
+it('renders the customer login page like This Is April', function () {
+    $this->get('/account/login')
+        ->assertSuccessful()
+        ->assertSee('Login', false)
+        ->assertSee('Enter your email and password to login', false)
+        ->assertSee('Forgot your password?', false)
+        ->assertSee('Recover password', false)
+        ->assertSee('Sign up', false)
+        ->assertSee(route('malefashion.account.register', absolute: false), false);
+});
 
 it('renders editorial category hero on the home page', function () {
     $this->get('/')
@@ -88,6 +109,10 @@ it('renders a shopify-style checkout page with session cart items', function () 
 
     $this->get('/checkout')
         ->assertSuccessful()
+        ->assertSee('announcement-bar', false)
+        ->assertSee('header--checkout', false)
+        ->assertSee('header__account', false)
+        ->assertDontSee('header__compare', false)
         ->assertSee('checkout', false)
         ->assertSee('Contact', false)
         ->assertSee('Delivery', false)

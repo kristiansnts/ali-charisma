@@ -34,6 +34,9 @@
                     <a href="#" class="search-switch">
                         <img src="{{ asset('malefashion/img/icon/search.png') }}" alt="">
                     </a>
+                    <a href="{{ auth('account')->check() ? route('malefashion.account') : route('malefashion.account.login') }}" class="header__account" aria-label="Account">
+                        <i class="fa fa-user-o" aria-hidden="true"></i>
+                    </a>
                     <a href="{{ route('malefashion.wishlist') }}" class="header__wishlist" aria-label="Wishlist">
                         <img src="{{ asset('malefashion/img/icon/heart.png') }}" alt="">
                         <span class="header__wishlist-count" data-wishlist-count>{{ $wishlistCount ?? 0 }}</span>

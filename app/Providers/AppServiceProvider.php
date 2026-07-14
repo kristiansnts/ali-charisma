@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\FilamentLogoutResponse;
 use App\Models\Account;
 use App\Models\ShippingVendor;
 use App\Policies\CompanyPolicy;
@@ -16,6 +17,7 @@ use App\Support\ProductCompareAttributes;
 use App\Support\ProductCompareList;
 use App\Support\ProductWishlistList;
 use Filament\Events\TenantSet;
+use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         config(['filament-accounts.model' => Account::class]);
+
+        $this->app->bind(LogoutResponseContract::class, FilamentLogoutResponse::class);
     }
 
     public function boot(): void
@@ -52,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
             setPermissionsTeamId($event->getTenant());
         });
 
-        View::composer(['layouts.malefashion', 'malefashion.*'], function ($view): void {
+        View::composer(['layouts.malefashion', 'layouts.malefashion-checkout', 'malefashion.*'], function ($view): void {
             $wishlistCount = ProductWishlistList::count();
             $cartItems = ProductCartList::items();
             $cartCount = ProductCartList::count();

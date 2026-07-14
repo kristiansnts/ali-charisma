@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CheckoutCustomerData;
 use App\Support\ProductCartList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class StorefrontCartController extends Controller
@@ -36,6 +38,7 @@ class StorefrontCartController extends Controller
 
         $subtotal = ProductCartList::subtotal();
         $shipping = 0.0;
+        $account = Auth::guard('account')->user();
 
         return view('malefashion.pages.checkout', [
             'lineItems' => array_map(fn (array $item): array => [
@@ -49,6 +52,8 @@ class StorefrontCartController extends Controller
             'subtotal' => $subtotal,
             'shipping' => $shipping,
             'total' => $subtotal + $shipping,
+            'account' => $account,
+            'customer' => CheckoutCustomerData::for($account),
         ]);
     }
 
