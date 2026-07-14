@@ -19,6 +19,11 @@ class StorefrontCartController extends Controller
         ]);
     }
 
+    public function drawer(): JsonResponse
+    {
+        return response()->json($this->drawerPayload());
+    }
+
     public function checkout(): View|RedirectResponse
     {
         $items = ProductCartList::items();
@@ -65,6 +70,7 @@ class StorefrontCartController extends Controller
             'count' => ProductCartList::count(),
             'total' => ProductCartList::formattedSubtotal(),
             'item' => $added,
+            'drawer_html' => $this->drawerHtml(),
             'html' => view('malefashion.partials.cart-upsell-dialog', [
                 'item' => $added,
                 'count' => ProductCartList::count(),
@@ -74,7 +80,7 @@ class StorefrontCartController extends Controller
         ]);
     }
 
-    public function sync(Request $request): RedirectResponse
+    public function sync(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'qty' => ['required', 'array'],
@@ -83,18 +89,47 @@ class StorefrontCartController extends Controller
 
         ProductCartList::syncQuantities($validated['qty']);
 
+        if ($request->wantsJson()) {
+            return response()->json($this->drawerPayload());
+        }
+
         return redirect()
             ->route('malefashion.cart')
             ->with('status', 'Cart updated.');
     }
 
-    public function destroy(string $key): RedirectResponse
+    public function destroy(Request $request, string $key): JsonResponse|RedirectResponse
     {
         ProductCartList::remove($key);
+
+        if ($request->wantsJson()) {
+            return response()->json($this->drawerPayload());
+        }
 
         return redirect()
             ->route('malefashion.cart')
             ->with('status', 'Item removed from cart.');
+    }
+
+    /**
+     * @return array{ok: true, count: int, total: string, html: string}
+     */
+    private function drawerPayload(): array
+    {
+        return [
+            'ok' => true,
+            'count' => ProductCartList::count(),
+            'total' => ProductCartList::formattedSubtotal(),
+            'html' => $this->drawerHtml(),
+        ];
+    }
+
+    private function drawerHtml(): string
+    {
+        return view('malefashion.partials.cart-drawer-body', [
+            'items' => ProductCartList::items(),
+            'total' => ProductCartList::formattedSubtotal(),
+        ])->render();
     }
 
     /**

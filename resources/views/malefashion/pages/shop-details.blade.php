@@ -1,430 +1,318 @@
 @extends('layouts.malefashion')
 
-@section('title', 'Product Details — Ali Charisma')
+@php
+    $product = [
+        'key' => 'hoodie-with-slogan',
+        'name' => 'Hoodie with slogan',
+        'price' => 210,
+        'price_label' => '$210.00',
+        'compare_at' => '$280.00',
+        'sku' => '00115fdr',
+        'category' => 'New Products',
+        'tag' => 'Sweatshirts & Hoodies',
+        'image' => asset('malefashion/img/shop-details/product-big-2.png'),
+        'short' => 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.',
+        'colors' => ['Black', 'Gainsboro'],
+        'gallery' => [
+            asset('malefashion/img/shop-details/product-big-2.png'),
+            asset('malefashion/img/shop-details/product-big-3.png'),
+            asset('malefashion/img/shop-details/product-big.png'),
+            asset('malefashion/img/shop-details/product-big-4.png'),
+        ],
+    ];
+
+    $related = [
+        [
+            'name' => 'Flared trousers',
+            'price' => '$274.00 – $309.00',
+            'image' => asset('malefashion/img/product/product-1.jpg'),
+            'key' => 'flared-trousers',
+            'cart_price' => '274.00',
+            'badge' => null,
+        ],
+        [
+            'name' => 'Print sweater',
+            'price' => '$270.00 – $290.00',
+            'image' => asset('malefashion/img/product/product-2.jpg'),
+            'key' => 'print-sweater',
+            'cart_price' => '270.00',
+            'badge' => 'Hot',
+        ],
+        [
+            'name' => 'Sweater with slogan',
+            'price' => '$210.00',
+            'image' => asset('malefashion/img/product/product-5.jpg'),
+            'key' => 'sweater-with-slogan',
+            'cart_price' => '210.00',
+            'badge' => 'Sale',
+            'compare_at' => '$280.00',
+        ],
+        [
+            'name' => 'Long strappy dress',
+            'price' => '$390.00 – $505.00',
+            'image' => asset('malefashion/img/womens_coll.jpg'),
+            'key' => 'long-strappy-dress',
+            'cart_price' => '390.00',
+            'badge' => 'Sale',
+            'compare_id' => optional($compareableProducts['long-strappy-dress'] ?? null)->id,
+        ],
+    ];
+@endphp
+
+@section('title', $product['name'].' — Ali Charisma')
 
 @section('content')
-<!-- Shop Details Section Begin -->
-    <section class="shop-details">
-        <div class="product__details__pic">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="product__details__breadcrumb">
-                            <a href="{{ route('malefashion.home') }}">Home</a>
-                            <a href="{{ route('malefashion.shop') }}">Shop</a>
-                            <span>Product Details</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="{{ asset('malefashion/img/shop-details/thumb-1.png') }}">
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="{{ asset('malefashion/img/shop-details/thumb-2.png') }}">
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="{{ asset('malefashion/img/shop-details/thumb-3.png') }}">
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="{{ asset('malefashion/img/shop-details/thumb-4.png') }}">
-                                        <i class="fa fa-play"></i>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6 col-md-9">
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="{{ asset('malefashion/img/shop-details/product-big-2.png') }}" alt="">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-2" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="{{ asset('malefashion/img/shop-details/product-big-3.png') }}" alt="">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-3" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="{{ asset('malefashion/img/shop-details/product-big.png') }}" alt="">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-4" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="{{ asset('malefashion/img/shop-details/product-big-4.png') }}" alt="">
-                                    <a href="https://www.youtube.com/watch?v=8PJ3_p7VqHw&list=RD8PJ3_p7VqHw&start_radio=1" class="video-popup"><i class="fa fa-play"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product__details__content">
-            <div class="container">
-                <div class="row d-flex justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="product__details__text">
-                            <h4>Hooded thermal anorak</h4>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                                <span> - 5 Reviews</span>
-                            </div>
-                            <h3>$270.00 <span>70.00</span></h3>
-                            <p>Coat with quilted lining and an adjustable hood. Featuring long sleeves with adjustable
-                                cuff tabs, adjustable asymmetric hem with elastic side tabs and a front zip fastening
-                            with placket.</p>
-                            <div class="product__details__option">
-                                <div class="product__details__option__size">
-                                    <span>Size:</span>
-                                    <label for="xxl">xxl
-                                        <input type="radio" id="xxl">
-                                    </label>
-                                    <label class="active" for="xl">xl
-                                        <input type="radio" id="xl">
-                                    </label>
-                                    <label for="l">l
-                                        <input type="radio" id="l">
-                                    </label>
-                                    <label for="sm">s
-                                        <input type="radio" id="sm">
-                                    </label>
-                                </div>
-                                <div class="product__details__option__color">
-                                    <span>Color:</span>
-                                    <label class="c-1" for="sp-1">
-                                        <input type="radio" id="sp-1">
-                                    </label>
-                                    <label class="c-2" for="sp-2">
-                                        <input type="radio" id="sp-2">
-                                    </label>
-                                    <label class="c-3" for="sp-3">
-                                        <input type="radio" id="sp-3">
-                                    </label>
-                                    <label class="c-4" for="sp-4">
-                                        <input type="radio" id="sp-4">
-                                    </label>
-                                    <label class="c-9" for="sp-9">
-                                        <input type="radio" id="sp-9">
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="product__details__cart__option">
-                                <div class="quantity">
-                                    <div class="pro-qty">
-                                        <input type="text" value="1">
-                                    </div>
-                                </div>
-                                <a href="#" class="primary-btn">add to cart</a>
-                            </div>
-                            <div class="product__details__btns__option">
-                                <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
-                                <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a>
-                            </div>
-                            <div class="product__details__last__option">
-                                <h5><span>Guaranteed Safe Checkout</span></h5>
-                                <img src="{{ asset('malefashion/img/shop-details/details-payment.png') }}" alt="">
-                                <ul>
-                                    <li><span>SKU:</span> 3812912</li>
-                                    <li><span>Categories:</span> Clothes</li>
-                                    <li><span>Tag:</span> Clothes, Skin, Body</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="product__details__tab">
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#tabs-5"
-                                    role="tab">Description</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#tabs-6" role="tab">Customer
-                                    Previews(5)</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#tabs-7" role="tab">Additional
-                                    information</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="tabs-5" role="tabpanel">
-                                    <div class="product__details__tab__content">
-                                        <p class="note">Nam tempus turpis at metus scelerisque placerat nulla deumantos
-                                            solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis
-                                            ut risus. Sedcus faucibus an sullamcorper mattis drostique des commodo
-                                        pharetras loremos.</p>
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Products Infomation</h5>
-                                            <p>A Pocket PC is a handheld computer, which features many of the same
-                                                capabilities as a modern PC. These handy little devices allow
-                                                individuals to retrieve and store e-mail messages, create a contact
-                                                file, coordinate appointments, surf the internet, exchange text messages
-                                                and more. Every product that is labeled as a Pocket PC must be
-                                                accompanied with specific software to operate the unit and must feature
-                                            a touchscreen and touchpad.</p>
-                                            <p>As is the case with any new technology product, the cost of a Pocket PC
-                                                was substantial during it’s early release. For approximately $700.00,
-                                                consumers could purchase one of top-of-the-line Pocket PCs in 2003.
-                                                These days, customers are finding that prices have become much more
-                                                reasonable now that the newness is wearing off. For approximately
-                                            $350.00, a new Pocket PC can now be purchased.</p>
-                                        </div>
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Material used</h5>
-                                            <p>Polyester is deemed lower quality due to its none natural quality’s. Made
-                                                from synthetic materials, not natural like wool. Polyester suits become
-                                                creased easily and are known for not being breathable. Polyester suits
-                                                tend to have a shine to them compared to wool and cotton suits, this can
-                                                make the suit look cheap. The texture of velvet is luxurious and
-                                                breathable. Velvet is a great choice for dinner party jacket and can be
-                                            worn all year round.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane" id="tabs-6" role="tabpanel">
-                                    <div class="product__details__tab__content">
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Products Infomation</h5>
-                                            <p>A Pocket PC is a handheld computer, which features many of the same
-                                                capabilities as a modern PC. These handy little devices allow
-                                                individuals to retrieve and store e-mail messages, create a contact
-                                                file, coordinate appointments, surf the internet, exchange text messages
-                                                and more. Every product that is labeled as a Pocket PC must be
-                                                accompanied with specific software to operate the unit and must feature
-                                            a touchscreen and touchpad.</p>
-                                            <p>As is the case with any new technology product, the cost of a Pocket PC
-                                                was substantial during it’s early release. For approximately $700.00,
-                                                consumers could purchase one of top-of-the-line Pocket PCs in 2003.
-                                                These days, customers are finding that prices have become much more
-                                                reasonable now that the newness is wearing off. For approximately
-                                            $350.00, a new Pocket PC can now be purchased.</p>
-                                        </div>
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Material used</h5>
-                                            <p>Polyester is deemed lower quality due to its none natural quality’s. Made
-                                                from synthetic materials, not natural like wool. Polyester suits become
-                                                creased easily and are known for not being breathable. Polyester suits
-                                                tend to have a shine to them compared to wool and cotton suits, this can
-                                                make the suit look cheap. The texture of velvet is luxurious and
-                                                breathable. Velvet is a great choice for dinner party jacket and can be
-                                            worn all year round.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane" id="tabs-7" role="tabpanel">
-                                    <div class="product__details__tab__content">
-                                        <p class="note">Nam tempus turpis at metus scelerisque placerat nulla deumantos
-                                            solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis
-                                            ut risus. Sedcus faucibus an sullamcorper mattis drostique des commodo
-                                        pharetras loremos.</p>
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Products Infomation</h5>
-                                            <p>A Pocket PC is a handheld computer, which features many of the same
-                                                capabilities as a modern PC. These handy little devices allow
-                                                individuals to retrieve and store e-mail messages, create a contact
-                                                file, coordinate appointments, surf the internet, exchange text messages
-                                                and more. Every product that is labeled as a Pocket PC must be
-                                                accompanied with specific software to operate the unit and must feature
-                                            a touchscreen and touchpad.</p>
-                                            <p>As is the case with any new technology product, the cost of a Pocket PC
-                                                was substantial during it’s early release. For approximately $700.00,
-                                                consumers could purchase one of top-of-the-line Pocket PCs in 2003.
-                                                These days, customers are finding that prices have become much more
-                                                reasonable now that the newness is wearing off. For approximately
-                                            $350.00, a new Pocket PC can now be purchased.</p>
-                                        </div>
-                                        <div class="product__details__tab__content__item">
-                                            <h5>Material used</h5>
-                                            <p>Polyester is deemed lower quality due to its none natural quality’s. Made
-                                                from synthetic materials, not natural like wool. Polyester suits become
-                                                creased easily and are known for not being breathable. Polyester suits
-                                                tend to have a shine to them compared to wool and cotton suits, this can
-                                                make the suit look cheap. The texture of velvet is luxurious and
-                                                breathable. Velvet is a great choice for dinner party jacket and can be
-                                            worn all year round.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Shop Details Section End -->
+<section class="ac-pdp">
+    <div class="container">
+        <nav class="ac-pdp__breadcrumb" aria-label="Breadcrumb">
+            <a href="{{ route('malefashion.home') }}">Home</a>
+            <span>/</span>
+            <a href="{{ route('malefashion.shop') }}">{{ $product['category'] }}</a>
+            <span>/</span>
+            <span aria-current="page">{{ $product['name'] }}</span>
+        </nav>
 
-    <!-- Related Section Begin -->
-    <section class="related spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="related-title">Related Product</h3>
+        <div class="row ac-pdp__row">
+            <div class="col-lg-6">
+                <div class="ac-pdp__gallery">
+                    <div class="ac-pdp__badges">
+                        <span class="ac-pdp__badge ac-pdp__badge--sale">Sale!</span>
+                        <span class="ac-pdp__badge ac-pdp__badge--hot">Hot</span>
+                    </div>
+                    <div class="ac-pdp__stage">
+                        <img
+                            id="ac-pdp-main-image"
+                            src="{{ $product['gallery'][0] }}"
+                            alt="{{ $product['name'] }}"
+                        >
+                    </div>
+                    <div class="ac-pdp__thumbs" role="list">
+                        @foreach ($product['gallery'] as $index => $image)
+                            <button
+                                type="button"
+                                class="ac-pdp__thumb {{ $index === 0 ? 'is-active' : '' }}"
+                                data-ac-pdp-thumb
+                                data-image="{{ $image }}"
+                                aria-label="View image {{ $index + 1 }}"
+                            >
+                                <img src="{{ $image }}" alt="">
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('malefashion/img/product/product-1.jpg') }}">
-                            <span class="label">New</span>
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/search.png') }}" alt=""></a></li>
-                            </ul>
+
+            <div class="col-lg-6">
+                <div class="ac-pdp__summary">
+                    <h1 class="ac-pdp__title">{{ $product['name'] }}</h1>
+
+                    <div class="ac-pdp__price">
+                        <span class="ac-pdp__price-compare">{{ $product['compare_at'] }}</span>
+                        <span class="ac-pdp__price-sale">{{ $product['price_label'] }}</span>
+                    </div>
+
+                    <div class="ac-pdp__meta-top">
+                        <span><strong>SKU:</strong> {{ $product['sku'] }}</span>
+                        <span><strong>Availability:</strong> In stock</span>
+                    </div>
+
+                    <p class="ac-pdp__excerpt">{{ $product['short'] }}</p>
+
+                    <div class="ac-pdp__option">
+                        <label class="ac-pdp__option-label" for="ac-pdp-color">Color</label>
+                        <select id="ac-pdp-color" class="ac-pdp__select" name="color">
+                            <option value="">Choose an option</option>
+                            @foreach ($product['colors'] as $color)
+                                <option value="{{ $color }}">{{ $color }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="ac-pdp__purchase">
+                        <div class="quantity">
+                            <div class="pro-qty">
+                                <input type="text" id="ac-pdp-qty" value="1" min="1" max="99" aria-label="Quantity">
+                            </div>
                         </div>
-                        <div class="product__item__text">
-                            <h6>Piqué Biker Jacket</h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>$67.24</h5>
-                            <div class="product__color__select">
-                                <label for="pc-1">
-                                    <input type="radio" id="pc-1">
-                                </label>
-                                <label class="active black" for="pc-2">
-                                    <input type="radio" id="pc-2">
-                                </label>
-                                <label class="grey" for="pc-3">
-                                    <input type="radio" id="pc-3">
-                                </label>
-                            </div>
+                        <button
+                            type="button"
+                            class="primary-btn ac-pdp__add-cart"
+                            data-add-to-cart
+                            data-cart-key="{{ $product['key'] }}"
+                            data-cart-name="{{ $product['name'] }}"
+                            data-cart-price="{{ $product['price'] }}"
+                            data-cart-price-label="{{ $product['price_label'] }}"
+                            data-cart-image="{{ $product['image'] }}"
+                        >Add to cart</button>
+                    </div>
+
+                    <div class="ac-pdp__actions">
+                        <a
+                            href="#"
+                            data-wishlist-toggle
+                            data-wishlist-key="{{ $product['key'] }}"
+                            data-wishlist-name="{{ $product['name'] }}"
+                            data-wishlist-price="{{ $product['price_label'] }}"
+                            data-wishlist-image="{{ $product['image'] }}"
+                        ><i class="fa fa-heart-o"></i> Add to Wishlist</a>
+                        <a href="#" data-compare-open><i class="fa fa-exchange"></i> Add to Compare</a>
+                    </div>
+
+                    <ul class="ac-pdp__meta">
+                        <li><span>SKU:</span> {{ $product['sku'] }}</li>
+                        <li><span>Category:</span> <a href="{{ route('malefashion.shop') }}">{{ $product['category'] }}</a></li>
+                        <li><span>Tag:</span> {{ $product['tag'] }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="ac-pdp__tabs product__details__tab">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#ac-pdp-desc" role="tab">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#ac-pdp-info" role="tab">Additional information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#ac-pdp-reviews" role="tab">Reviews (0)</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="ac-pdp-desc" role="tabpanel">
+                    <div class="product__details__tab__content">
+                        <div class="product__details__tab__content__item">
+                            <h5>Sample Paragraph Text</h5>
+                            <p>Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        </div>
+                        <div class="product__details__tab__content__item">
+                            <h5>Sample Unordered List</h5>
+                            <ul>
+                                <li>Fabric 1: 100% Polyester</li>
+                                <li>Fabric 2: 100% Polyester, Lining: 100% Polyester</li>
+                                <li>Fabric 3: 75% Polyester, 20% Viscose, 5% Elastane</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('malefashion/img/product/product-2.jpg') }}">
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/search.png') }}" alt=""></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>Piqué Biker Jacket</h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>$67.24</h5>
-                            <div class="product__color__select">
-                                <label for="pc-4">
-                                    <input type="radio" id="pc-4">
-                                </label>
-                                <label class="active black" for="pc-5">
-                                    <input type="radio" id="pc-5">
-                                </label>
-                                <label class="grey" for="pc-6">
-                                    <input type="radio" id="pc-6">
-                                </label>
-                            </div>
-                        </div>
+                <div class="tab-pane" id="ac-pdp-info" role="tabpanel">
+                    <div class="product__details__tab__content">
+                        <table class="ac-pdp__info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Weight</th>
+                                    <td>9 kg</td>
+                                </tr>
+                                <tr>
+                                    <th>Dimensions</th>
+                                    <td>12 × 5 × 7 cm</td>
+                                </tr>
+                                <tr>
+                                    <th>Color</th>
+                                    <td>{{ implode(', ', $product['colors']) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item sale">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('malefashion/img/product/product-3.jpg') }}">
-                            <span class="label">Sale</span>
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/search.png') }}" alt=""></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>Multi-pocket Chest Bag</h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>$43.48</h5>
-                            <div class="product__color__select">
-                                <label for="pc-7">
-                                    <input type="radio" id="pc-7">
-                                </label>
-                                <label class="active black" for="pc-8">
-                                    <input type="radio" id="pc-8">
-                                </label>
-                                <label class="grey" for="pc-9">
-                                    <input type="radio" id="pc-9">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-sm-6">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('malefashion/img/product/product-4.jpg') }}">
-                            <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('malefashion/img/icon/search.png') }}" alt=""></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>Diagonal Textured Cap</h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <h5>$60.9</h5>
-                            <div class="product__color__select">
-                                <label for="pc-10">
-                                    <input type="radio" id="pc-10">
-                                </label>
-                                <label class="active black" for="pc-11">
-                                    <input type="radio" id="pc-11">
-                                </label>
-                                <label class="grey" for="pc-12">
-                                    <input type="radio" id="pc-12">
-                                </label>
-                            </div>
-                        </div>
+                <div class="tab-pane" id="ac-pdp-reviews" role="tabpanel">
+                    <div class="product__details__tab__content">
+                        <p>There are no reviews yet.</p>
+                        <p>Be the first to review “{{ $product['name'] }}”.</p>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- Related Section End -->
+    </div>
+</section>
+
+<section class="related spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="related-title">Related products</h3>
+            </div>
+        </div>
+        <div class="row">
+            @foreach ($related as $item)
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="product__item {{ ($item['badge'] ?? null) === 'Sale' ? 'sale' : '' }}">
+                        <div class="product__item__pic set-bg" data-setbg="{{ $item['image'] }}">
+                            @if (! empty($item['badge']))
+                                <span class="label">{{ $item['badge'] }}</span>
+                            @endif
+                            <ul class="product__hover">
+                                <li>
+                                    <a
+                                        href="#"
+                                        data-wishlist-toggle
+                                        data-wishlist-key="{{ $item['key'] }}"
+                                        data-wishlist-name="{{ $item['name'] }}"
+                                        data-wishlist-price="{{ $item['price'] }}"
+                                        data-wishlist-image="{{ $item['image'] }}"
+                                        @if (! empty($item['compare_id'])) data-wishlist-product-id="{{ $item['compare_id'] }}" @endif
+                                        aria-label="Add to wishlist"
+                                    >
+                                        <img src="{{ asset('malefashion/img/icon/heart.png') }}" alt="">
+                                    </a>
+                                </li>
+                                <li>
+                                    @if (! empty($item['compare_id']))
+                                        <a href="#" data-compare-add="{{ $item['compare_id'] }}">
+                                            <img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span>
+                                        </a>
+                                    @else
+                                        <a href="#"><img src="{{ asset('malefashion/img/icon/compare.png') }}" alt=""> <span>Compare</span></a>
+                                    @endif
+                                </li>
+                                <li>
+                                    <a href="{{ route('malefashion.shop-details') }}">
+                                        <img src="{{ asset('malefashion/img/icon/search.png') }}" alt="">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6>{{ $item['name'] }}</h6>
+                            <a
+                                href="#"
+                                class="add-cart"
+                                data-add-to-cart
+                                data-cart-key="{{ $item['key'] }}"
+                                data-cart-name="{{ $item['name'] }}"
+                                data-cart-price="{{ $item['cart_price'] }}"
+                                data-cart-price-label="{{ $item['price'] }}"
+                                data-cart-image="{{ $item['image'] }}"
+                                @if (! empty($item['compare_id'])) data-cart-product-id="{{ $item['compare_id'] }}" @endif
+                            >+ Add To Cart</a>
+                            <h5>
+                                @if (! empty($item['compare_at']))
+                                    <span style="text-decoration: line-through; color: #b7b7b7; font-weight: 400; margin-right: 6px;">{{ $item['compare_at'] }}</span>
+                                @endif
+                                {{ $item['price'] }}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
 @endsection
+
+@push('scripts')
+<script>
+(function ($) {
+    $(document).on('click', '[data-ac-pdp-thumb]', function () {
+        var src = $(this).data('image');
+        if (!src) {
+            return;
+        }
+        $('#ac-pdp-main-image').attr('src', src);
+        $('[data-ac-pdp-thumb]').removeClass('is-active');
+        $(this).addClass('is-active');
+    });
+})(jQuery);
+</script>
+@endpush

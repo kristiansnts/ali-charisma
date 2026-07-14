@@ -22,6 +22,7 @@ Route::name('malefashion.')->group(function (): void {
     Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
     Route::delete('/wishlist/{key}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::post('/storefront-cart', [StorefrontCartController::class, 'store'])->name('storefront-cart.store');
+    Route::get('/storefront-cart/drawer', [StorefrontCartController::class, 'drawer'])->name('storefront-cart.drawer');
     Route::put('/storefront-cart', [StorefrontCartController::class, 'sync'])->name('storefront-cart.sync');
     Route::delete('/storefront-cart/{key}', [StorefrontCartController::class, 'destroy'])->name('storefront-cart.destroy');
 

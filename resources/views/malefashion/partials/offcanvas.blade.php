@@ -22,10 +22,10 @@
             <img src="{{ asset('malefashion/img/icon/heart.png') }}" alt="">
             <span class="header__wishlist-count" data-wishlist-count>{{ $wishlistCount ?? 0 }}</span>
         </a>
-        <a href="{{ route('malefashion.cart') }}">
+        <button type="button" class="header__cart" data-cart-open aria-label="Open cart">
             <img src="{{ asset('malefashion/img/icon/cart.png') }}" alt="">
             <span data-cart-count>{{ $cartCount ?? 0 }}</span>
-        </a>
+        </button>
         <div class="price" data-cart-total>{{ $cartTotal ?? '$0.00' }}</div>
         <button type="button" class="header__compare" data-compare-open aria-label="Compare products">
             <img src="{{ asset('malefashion/img/icon/compare.png') }}" alt="">

@@ -492,13 +492,54 @@
     });
 
     /*------------------
-        Cart upsell dialog (This Is April style)
+        Cart drawer + upsell dialog
     --------------------*/
     var cartConfig = window.malefashionCart || {};
+
+    function cartHeaders() {
+        return {
+            'X-CSRF-TOKEN': cartConfig.csrfToken,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+    }
 
     function updateCartChrome(count, total) {
         $('[data-cart-count]').text(count);
         $('[data-cart-total]').text(total);
+        $('[data-cart-drawer-total]').text(total);
+    }
+
+    function renderCartDrawer(html) {
+        $('#cart-drawer-body').html(html);
+    }
+
+    function openCartDrawer() {
+        $('#cart-drawer').addClass('is-open').attr('aria-hidden', 'false');
+        $('body').addClass('cart-drawer-open');
+    }
+
+    function closeCartDrawer() {
+        $('#cart-drawer').removeClass('is-open').attr('aria-hidden', 'true');
+        $('body').removeClass('cart-drawer-open');
+    }
+
+    function refreshCartDrawer(open) {
+        if (!cartConfig.drawerUrl) {
+            return;
+        }
+
+        $.ajax({
+            url: cartConfig.drawerUrl,
+            method: 'GET',
+            headers: cartHeaders()
+        }).done(function (response) {
+            updateCartChrome(response.count, response.total);
+            renderCartDrawer(response.html);
+            if (open) {
+                openCartDrawer();
+            }
+        });
     }
 
     function openCartUpsell(html) {
@@ -511,6 +552,63 @@
         $('#cart-upsell-modal').removeClass('is-open').attr('aria-hidden', 'true');
         $('body').removeClass('cart-upsell-open');
     }
+
+    $(document).on('click', '[data-cart-open]', function (e) {
+        e.preventDefault();
+        refreshCartDrawer(true);
+    });
+
+    $(document).on('click', '[data-cart-close]', function (e) {
+        e.preventDefault();
+        closeCartDrawer();
+    });
+
+    $(document).on('click', '[data-cart-note-toggle]', function (e) {
+        e.preventDefault();
+        var $note = $(this).siblings('.cart-drawer__note');
+        var isHidden = $note.prop('hidden');
+        $note.prop('hidden', !isHidden);
+        $(this).text(isHidden ? 'Hide order note' : 'Add order note');
+    });
+
+    $(document).on('click', '[data-cart-qty-change]', function (e) {
+        e.preventDefault();
+        var key = $(this).data('cart-key');
+        var qty = parseInt($(this).data('cart-qty'), 10);
+        if (!key || !cartConfig.syncUrl || isNaN(qty)) {
+            return;
+        }
+
+        var payload = { qty: {} };
+        payload.qty[key] = qty;
+
+        $.ajax({
+            url: cartConfig.syncUrl,
+            method: 'PUT',
+            headers: cartHeaders(),
+            data: payload
+        }).done(function (response) {
+            updateCartChrome(response.count, response.total);
+            renderCartDrawer(response.html);
+        });
+    });
+
+    $(document).on('click', '[data-cart-remove]', function (e) {
+        e.preventDefault();
+        var key = $(this).data('cart-key');
+        if (!key || !cartConfig.destroyUrlTemplate) {
+            return;
+        }
+
+        $.ajax({
+            url: cartConfig.destroyUrlTemplate + '/' + encodeURIComponent(key),
+            method: 'DELETE',
+            headers: cartHeaders()
+        }).done(function (response) {
+            updateCartChrome(response.count, response.total);
+            renderCartDrawer(response.html);
+        });
+    });
 
     $(document).on('click', '[data-cart-upsell-close]', function (e) {
         e.preventDefault();
@@ -527,11 +625,7 @@
         $.ajax({
             url: cartConfig.storeUrl,
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': cartConfig.csrfToken,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
+            headers: cartHeaders(),
             data: {
                 key: $btn.data('cart-key'),
                 name: $btn.data('cart-name'),
@@ -542,6 +636,9 @@
             }
         }).done(function (response) {
             updateCartChrome(response.count, response.total);
+            if (response.drawer_html) {
+                renderCartDrawer(response.drawer_html);
+            }
             openCartUpsell(response.html);
         });
     });

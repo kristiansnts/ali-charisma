@@ -37,6 +37,7 @@
     @include('malefashion.partials.footer')
     @include('malefashion.partials.search')
     @include('malefashion.partials.compare-modal')
+    @include('malefashion.partials.cart-drawer')
     @include('malefashion.partials.cart-upsell-modal')
 
     <script>
@@ -53,6 +54,9 @@
         };
         window.malefashionCart = {
             storeUrl: @json(route('malefashion.storefront-cart.store')),
+            drawerUrl: @json(route('malefashion.storefront-cart.drawer')),
+            syncUrl: @json(route('malefashion.storefront-cart.sync')),
+            destroyUrlTemplate: @json(url('/storefront-cart')),
             csrfToken: @json(csrf_token()),
         };
         window.malefashionSearch = {

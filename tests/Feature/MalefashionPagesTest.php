@@ -149,3 +149,21 @@ it('spaces header nav icons without overlapping the cart total', function () {
         ->assertSee('malefashion/img/icon/heart.png', false)
         ->assertSee('malefashion/img/icon/cart.png', false);
 });
+
+it('renders the Ali Charisma style product details page', function () {
+    $this->get('/shop/product')
+        ->assertSuccessful()
+        ->assertSee('Hoodie with slogan', false)
+        ->assertSee('$210.00', false)
+        ->assertSee('$280.00', false)
+        ->assertSee('00115fdr', false)
+        ->assertSee('New Products', false)
+        ->assertSee('Sweatshirts &amp; Hoodies', false)
+        ->assertSee('ac-pdp', false)
+        ->assertSee('data-add-to-cart', false)
+        ->assertSee('data-wishlist-toggle', false)
+        ->assertSee('Add to cart', false)
+        ->assertSee('Additional information', false)
+        ->assertSee('Related products', false)
+        ->assertDontSee('Hooded thermal anorak', false);
+});

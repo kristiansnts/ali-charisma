@@ -54,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(['layouts.malefashion', 'malefashion.*'], function ($view): void {
             $wishlistCount = ProductWishlistList::count();
+            $cartItems = ProductCartList::items();
             $cartCount = ProductCartList::count();
             $cartTotal = ProductCartList::formattedSubtotal();
 
@@ -63,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
                     'compareProducts' => [],
                     'compareableProducts' => collect(),
                     'wishlistCount' => $wishlistCount,
+                    'cartItems' => $cartItems,
                     'cartCount' => $cartCount,
                     'cartTotal' => $cartTotal,
                 ]);
@@ -85,6 +87,7 @@ class AppServiceProvider extends ServiceProvider
                 'compareProducts' => $products,
                 'compareableProducts' => $compareableProducts,
                 'wishlistCount' => $wishlistCount,
+                'cartItems' => $cartItems,
                 'cartCount' => $cartCount,
                 'cartTotal' => $cartTotal,
             ]);
