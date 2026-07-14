@@ -165,6 +165,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Recent Updates [2026-07-14]
 
+- Midtrans Snap sandbox checkout: login required, USD→IDR payment conversion, pending order creation, webhook notification handler
 - Require customer + ship-from phone for DHL Express checkout rate quotes (ShipStation business rule)
 - Web AJAX validation errors render as JSON when the request expects JSON
 - Switch checkout DHL service from domestic to Express Worldwide (nondoc), with customs for international quotes

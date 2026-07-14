@@ -64,6 +64,31 @@ class CheckoutShippingQuote
     }
 
     /**
+     * ShipStation rate_id values are single-use; match the shopper's selection by service_code.
+     *
+     * @param  array{rates: list<array{rate_id: string, service_code: string, service_type: string, carrier_friendly_name: string, amount: float, currency: string, delivery_days: int|null, meta: string}>}  $quote
+     * @return array{rate_id: string, service_code: string, service_type: string, carrier_friendly_name: string, amount: float, currency: string, delivery_days: int|null, meta: string}|null
+     */
+    public function matchSelectedRate(array $quote, string $serviceCode, float $amount): ?array
+    {
+        $rates = collect($quote['rates']);
+
+        $matched = $rates->first(
+            fn (array $rate): bool => $rate['service_code'] === $serviceCode,
+        );
+
+        if ($matched === null) {
+            return null;
+        }
+
+        if (abs((float) $matched['amount'] - $amount) > 0.01) {
+            return null;
+        }
+
+        return $matched;
+    }
+
+    /**
      * @return array{name: string, phone?: string|null, company_name?: string|null, address_line1: string, address_line2?: string|null, city_locality: string, state_province: string, postal_code: string, country_code: string, address_residential_indicator?: string}
      */
     private function shipFrom(): array

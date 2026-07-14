@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\CompareController;
+use App\Http\Controllers\MidtransNotificationController;
 use App\Http\Controllers\PredictiveSearchController;
 use App\Http\Controllers\StorefrontAccountController;
 use App\Http\Controllers\StorefrontCartController;
+use App\Http\Controllers\StorefrontCheckoutController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +37,12 @@ Route::name('malefashion.')->group(function (): void {
     Route::get('/cart', [StorefrontCartController::class, 'index'])->name('cart');
     Route::get('/checkout', [StorefrontCartController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/shipping-rates', [StorefrontCartController::class, 'shippingRates'])->name('checkout.shipping-rates');
+    Route::post('/checkout/pay', [StorefrontCheckoutController::class, 'pay'])
+        ->middleware('auth:account')
+        ->name('checkout.pay');
+    Route::get('/checkout/finish', [StorefrontCheckoutController::class, 'finish'])->name('checkout.finish');
+    Route::get('/checkout/unfinish', [StorefrontCheckoutController::class, 'unfinish'])->name('checkout.unfinish');
+    Route::post('/midtrans/notification', [MidtransNotificationController::class, 'store'])->name('midtrans.notification');
     Route::get('/search/predictive', PredictiveSearchController::class)->name('search.predictive');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');

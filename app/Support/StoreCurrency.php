@@ -35,6 +35,46 @@ class StoreCurrency
         return strtoupper((string) config('shipstation.preferred_currency', 'USD'));
     }
 
+    public function paymentCode(): string
+    {
+        return strtoupper((string) config('midtrans.payment_currency', 'IDR'));
+    }
+
+    public function toPaymentAmount(float $storeAmount): int
+    {
+        $converted = $this->convertBetween($storeAmount, $this->code(), $this->paymentCode());
+
+        return max(1, (int) round($converted));
+    }
+
+    public function fromPaymentAmount(int $paymentAmount): float
+    {
+        return $this->convertBetween((float) $paymentAmount, $this->paymentCode(), $this->code());
+    }
+
+    public function convertBetween(float $amount, string $fromCurrency, string $toCurrency): float
+    {
+        $from = strtoupper(trim($fromCurrency));
+        $to = strtoupper(trim($toCurrency));
+
+        if ($from === $to) {
+            return round($amount, $this->decimalPlaces($to));
+        }
+
+        try {
+            $multiplier = $this->multiplier($from, $to);
+        } catch (Throwable $exception) {
+            throw new RuntimeException('Unable to convert payment amounts right now.', 0, $exception);
+        }
+
+        return round($amount * $multiplier, $this->decimalPlaces($to));
+    }
+
+    private function decimalPlaces(string $currency): int
+    {
+        return $currency === $this->paymentCode() ? 0 : 2;
+    }
+
     /**
      * exchangeratesapi.io free tier only allows EUR as base; cross via EUR for any pair.
      */
